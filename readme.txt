@@ -1,17 +1,19 @@
 
-  Delta Forth .NET Compiler, Version 1.31
-  Copyright (C)1997-2006 Valer BOCAN (http://www.dataman.ro)
+  Delta Forth .NET Compiler, Version 1.4
+  Copyright (C)1997-2011 Valer BOCAN, PhD, Romania (http://www.bocan.ro/deltaforthnet)
   All Rights Reserved.
 
-  Released: January 21, 2006
+  Released: November 2, 2011
 
   * The Delta Forth .NET source code has been written entirely in C# and has
   approximately 4000 lines.
-  * To compile the source code you need Microsoft .NET Framework SDK 1.1,
-  .NET Framework SDK 2.0 or Microsoft Visual Studio .NET 2003/2005 (any edition).
+  * Refactored compiler code to bring it to the .NET 4 world.
   * It has been reported that the execution and compilation of both the compiler
   and the generated executables work flawlessy under Mono, the open
   source .NET implementation.
-  * If you make changes to the source code provided here, please do not
-  distribute them. Instead, send them to me (vbocan@dataman.ro) and I may
-  include your work in future relases.
+  * This software is free to use for any purpose. You are free to experiment
+  with the compiler, its source code, compiled Forth programs, etc. Branching
+  this code is not allowed, that is you may not create your own flavor of Forth
+  based on the code provided here. If you have done anything fancy and you think
+  that would be useful for other Forth enthusiast, please send me a note and I
+  will incorporate your change in Delta Forth.
