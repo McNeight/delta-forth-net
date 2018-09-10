@@ -1,12 +1,11 @@
 /*
  * Delta Forth .NET - World's first Forth compiler for the .NET platform
- * Copyright (C)1997-2002 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
+ * Copyright (C)1997-2003 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
  * 
  * This program and its source code is distributed in the hope that it will
  * be useful. No warranty of any kind is provided.
  * Please DO NOT distribute modified copies of the source code.
  * 
- * If you like this software, please make a donation to a charity of your choice.
  */
 
 using System;
@@ -14,6 +13,7 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+using System.IO;
 
 namespace DeltaForth
 {
@@ -50,7 +50,7 @@ namespace DeltaForth
 	/// Class ForthCodeGenerator
 	/// 
 	/// Date of creation:		Wednesday,	September 12, 2001
-	/// Date of last update:	Tuesday,	January   15, 2002
+	/// Date of last update:	Wednesday,	April     30, 2003
 	/// 
 	/// Description:
 	/// </summary>
@@ -111,7 +111,7 @@ namespace DeltaForth
 		private Stack CaseStack;			// Stack for the CASE-ENDCASE control structure
 		private Stack DoStack;				// Stack for the DO-LOOP/+LOOP control structure
 		
-		public ForthCodeGenerator(string p_TargetFileName, string p_TargetDirectory, string p_LibraryName, ArrayList p_GlobalConstants, ArrayList p_GlobalVariables, ArrayList p_LocalVariables, ArrayList p_Words, ArrayList p_ExternalWords, bool p_bExe, bool p_bCheckStack, int iForthStackSize, int iReturnStackSize)
+		public ForthCodeGenerator(string p_TargetFileName, string p_TargetDirectory, string p_SignatureFileName, string p_LibraryName, ArrayList p_GlobalConstants, ArrayList p_GlobalVariables, ArrayList p_LocalVariables, ArrayList p_Words, ArrayList p_ExternalWords, bool p_bExe, bool p_bCheckStack, int iForthStackSize, int iReturnStackSize)
 		{
 			// Initialize variables
 			TargetFileName = p_TargetFileName;
@@ -164,6 +164,29 @@ namespace DeltaForth
 
 			assemblyName = new AssemblyName();			// Create an assembly name
 			assemblyName.Name = "DeltaForthEngine";
+
+			// Sign assembly (if the p_SignatureFileName parameter is not empty)
+			if(p_SignatureFileName != string.Empty)
+			{
+				try 
+				{
+					FileStream fs = new FileStream(p_SignatureFileName, FileMode.Open);
+					StrongNameKeyPair kp = new StrongNameKeyPair(fs);
+					// The line below will throw an exception if the file does not
+					// contain a valid key
+					string PublicKey = kp.PublicKey.ToString();
+					fs.Close();
+					assemblyName.KeyPair = kp;
+				}
+				catch(FileNotFoundException)
+				{
+					throw new Exception("Signature file " + p_SignatureFileName + " is missing.");
+				}
+				catch(Exception)
+				{
+					throw new Exception("Signature file " + p_SignatureFileName + " is invalid.");
+				}
+			}
 
 			// Create the assembly
 			assembly = appDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Save, p_TargetDirectory);
@@ -236,18 +259,12 @@ namespace DeltaForth
 			{
 				entrypoint = StartupCode;	// Execution begins with the startup code
 			}
-			//if(bExe)
-			//{
-				assembly.SetEntryPoint(entrypoint, PEFileKinds.ConsoleApplication);
-			//}
-			//else
-			//{
-				// NOTE:
-				// DF versions prior to 1.0 beta 2b used the line below to set up the entry point
-				// of the DLL. With the advent of the .NET Framework RC, this technique didn't work
-				// any more, since a DLL initialization exception occurs at runtime.
-				//assembly.SetEntryPoint(entrypoint, PEFileKinds.Dll);
-			//}
+			assembly.SetEntryPoint(entrypoint, PEFileKinds.ConsoleApplication);
+			// NOTE:
+			// DF versions prior to 1.0 beta 2b used the line below to set up the entry point
+			// of the DLL. With the advent of the .NET Framework RC, this technique didn't work
+			// any more, since a DLL initialization exception occurs at runtime.
+			//assembly.SetEntryPoint(entrypoint, PEFileKinds.Dll);
 		}
 
 		// AddMethod - Builds a method and adds it to the DeltaForthEngine class
@@ -2748,6 +2765,12 @@ namespace DeltaForth
 		private void _Leave(ILGenerator ilgen)
 		{
 			_tagDO sDO = (_tagDO)DoStack.Peek();
+			// Clean up 2 elements from the return stack
+			ilgen.Emit(OpCodes.Ldsfld, ReturnStackIndex);
+			ilgen.Emit(OpCodes.Ldc_I4_2);
+			ilgen.Emit(OpCodes.Sub);
+			ilgen.Emit(OpCodes.Stsfld, ReturnStackIndex);
+
 			ilgen.Emit(OpCodes.Br, sDO.lbLoop);
 		}
 
@@ -2780,6 +2803,12 @@ namespace DeltaForth
 			ilgen.Emit(OpCodes.Stelem_I4);
 			ilgen.Emit(OpCodes.Br, sDO.lbDo);
 			ilgen.MarkLabel(sDO.lbLoop);
+			// Clean up 2 elements from the return stack
+			ilgen.Emit(OpCodes.Ldsfld, ReturnStackIndex);
+			ilgen.Emit(OpCodes.Ldc_I4_2);
+			ilgen.Emit(OpCodes.Sub);
+			ilgen.Emit(OpCodes.Stsfld, ReturnStackIndex);
+
 			DoStack.Pop();
 		}
 
@@ -2818,6 +2847,12 @@ namespace DeltaForth
 			ilgen.Emit(OpCodes.Stelem_I4);
 			ilgen.Emit(OpCodes.Br, sDO.lbDo);
 			ilgen.MarkLabel(sDO.lbLoop);
+			// Clean up 2 elements from the return stack
+			ilgen.Emit(OpCodes.Ldsfld, ReturnStackIndex);
+			ilgen.Emit(OpCodes.Ldc_I4_2);
+			ilgen.Emit(OpCodes.Sub);
+			ilgen.Emit(OpCodes.Stsfld, ReturnStackIndex);
+
 			DoStack.Pop();
 		}
 

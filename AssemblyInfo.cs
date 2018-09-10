@@ -1,12 +1,11 @@
 /*
  * Delta Forth .NET - World's first Forth compiler for the .NET platform
- * Copyright (C)1997-2002 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
+ * Copyright (C)1997-2003 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
  * 
  * This program and its source code is distributed in the hope that it will
  * be useful. No warranty of any kind is provided.
  * Please DO NOT distribute modified copies of the source code.
  * 
- * If you like this software, please make a donation to a charity of your choice.
  */
 
 using System.Reflection;
@@ -22,7 +21,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(C)1997-2002 Valer BOCAN <http://www.dataman.ro>")]
+[assembly: AssemblyCopyright("(C)1997-2003 Valer BOCAN <http://www.dataman.ro>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -37,7 +36,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.0")]
+[assembly: AssemblyVersion("1.2")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

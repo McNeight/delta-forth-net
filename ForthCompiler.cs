@@ -1,12 +1,11 @@
 /*
  * Delta Forth .NET - World's first Forth compiler for the .NET platform
- * Copyright (C)1997-2002 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
+ * Copyright (C)1997-2003 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
  * 
  * This program and its source code is distributed in the hope that it will
  * be useful. No warranty of any kind is provided.
  * Please DO NOT distribute modified copies of the source code.
  * 
- * If you like this software, please make a donation to a charity of your choice.
  */
 
 using System;
@@ -26,11 +25,12 @@ namespace DeltaForth
 		static string sInput;		// Input filename
 		static string sOutputFile;	// Output filename
 		static string sOutputDir;	// Output directory
+		static string sSignatureFile;	// Signature file (snk)
 
 		static void DisplayLogo()
 		{
-			Console.WriteLine("Delta Forth .NET Compiler, Version 1.0");
-			Console.WriteLine("Copyright (C) Valer BOCAN (http://www.dataman.ro). All Rights Reserved.\n\r");
+			Console.WriteLine("Delta Forth .NET Compiler, Version 1.2");
+			Console.WriteLine("Copyright (C)1997-2003 Valer BOCAN (http://www.dataman.ro).\n\rAll Rights Reserved.\n\r");
 		}
 
 		static void Usage()
@@ -48,6 +48,7 @@ namespace DeltaForth
 			Console.WriteLine("/RS:<size>\t\tSpecify return stack size (default is 1024 cells)");
 			Console.WriteLine("/MAP\t\t\tGenerate detailed map information");
 			Console.WriteLine("/OUTPUT=<targetfile>\tCompile to file with specified name\n\r\t\t\t(user must provide extension, if any)");
+			Console.WriteLine("/KEY=<keyfile>\t\tCompile with strong signature\n\r\t\t\t(<keyfile> contains private key)");
 			Console.WriteLine("\n\rDefault source file extension is .4th");
 		}
 
@@ -56,7 +57,7 @@ namespace DeltaForth
 			// Initialize default parameter values
 			bDisplayLogo = bExe = bCheckStack = true;
 			bQuiet = bClock = bMap = false;
-			sOutputFile = sOutputDir = "";
+			sOutputFile = sOutputDir = sSignatureFile = string.Empty;
 
 			// Display usage screen if no parameters are given
 			if(args.Length < 1)
@@ -124,7 +125,12 @@ namespace DeltaForth
 								return;
 							}
 						}
-						else 
+						else
+						if(args[i].ToUpper().StartsWith("/KEY="))
+						{
+							sSignatureFile = args[i].Substring(5);
+						}
+						else
 						{
 							Usage();
 							return;
@@ -157,7 +163,7 @@ namespace DeltaForth
 
 			try 
 			{
-				ForthCompiler fc = new ForthCompiler(sInput, sOutputFile, sOutputDir, bQuiet, bClock, bExe, bCheckStack, iForthStackSize, iReturnStackSize, bMap);
+				ForthCompiler fc = new ForthCompiler(sInput, sOutputFile, sOutputDir, sSignatureFile, bQuiet, bClock, bExe, bCheckStack, iForthStackSize, iReturnStackSize, bMap);
 			} 
 			catch(Exception e)
 			{
@@ -318,7 +324,7 @@ namespace DeltaForth
 		ArrayList ExternalWords;	// List of Forth external words
 		string LibraryName;			// Name of the library to be created
 		
-		public ForthCompiler(string SourceFileName, string TargetFileName, string TargetDirectory, bool bQuiet, bool bClock, bool bExe, bool bCheckStack, int iForthStackSize, int iReturnStackSize, bool bMap)
+		public ForthCompiler(string SourceFileName, string TargetFileName, string TargetDirectory, string SignatureFile, bool bQuiet, bool bClock, bool bExe, bool bCheckStack, int iForthStackSize, int iReturnStackSize, bool bMap)
 		{
 			// Initialize start time
 			DateTime dtStart = DateTime.Now;
@@ -346,8 +352,14 @@ namespace DeltaForth
 			}
 			fsa.GetMetaData(out LibraryName, out GlobalConstants, out GlobalVariables, out LocalVariables, out Words, out ExternalWords);
 			// Generate code
-			if(!bQuiet) Console.Write("Generating code...\t  ");
-			ForthCodeGenerator fcg = new ForthCodeGenerator(TargetFileName, TargetDirectory, LibraryName, GlobalConstants, GlobalVariables, LocalVariables, Words, ExternalWords, bExe, bCheckStack, iForthStackSize, iReturnStackSize);
+			if(!bQuiet) 
+			{
+				if(SignatureFile == string.Empty)
+					Console.Write("Generating code...\t  ");
+				else
+					Console.Write("Generating signed code... ");
+			}
+			ForthCodeGenerator fcg = new ForthCodeGenerator(TargetFileName, TargetDirectory, SignatureFile, LibraryName, GlobalConstants, GlobalVariables, LocalVariables, Words, ExternalWords, bExe, bCheckStack, iForthStackSize, iReturnStackSize);
 			fcg.DoGenerateCode();
 			ts3 = (DateTime.Now - dtStart);
 			if(!bQuiet) 

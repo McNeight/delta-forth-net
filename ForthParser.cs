@@ -1,12 +1,11 @@
 /*
  * Delta Forth .NET - World's first Forth compiler for the .NET platform
- * Copyright (C)1997-2002 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
+ * Copyright (C)1997-2003 Valer BOCAN, Romania (vbocan@dataman.ro, http://www.dataman.ro)
  * 
  * This program and its source code is distributed in the hope that it will
  * be useful. No warranty of any kind is provided.
  * Please DO NOT distribute modified copies of the source code.
  * 
- * If you like this software, please make a donation to a charity of your choice.
  */
 
 using System;
@@ -23,7 +22,7 @@ namespace DeltaForth
 	/// Class ForthParser
 	/// 
 	/// Date of creation:		Wednesday, September  5, 2001
-	/// Date of last update:	Monday,    September 10, 2001
+	/// Date of last update:	Tuesday,   April      2, 2002
 	/// 
 	/// Description:
 	///	
@@ -93,6 +92,14 @@ namespace DeltaForth
 
 				if(atom.StartsWith(@"\")) // Deal with the single line comment (if found, drop the line)
 						return;
+
+				// Avoid entering comment mode
+				// if the atom is in the form '(comment)'
+				if(atom.StartsWith("(") && atom.EndsWith(")"))
+				{
+					match = match.NextMatch();	// Advance to the next atom
+					continue;
+				}
 				if(atom.StartsWith("("))  // Begin multi-line comment
 				{
 					CommentMode = true;
