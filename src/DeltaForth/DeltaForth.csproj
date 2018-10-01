@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>
+      <!-- .NET Core -->
+      <!-- netcoreapp1.0;netcoreapp1.1; -->
+      <!--netcoreapp2.0;netcoreapp2.1;-->
+      <!-- .NET Framework -->
+      net45;net451;net452;
+      net46;net461;net462;
+      net47;net471;net472;
+    </TargetFrameworks>
+    <SignAssembly>False</SignAssembly>
+    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+    <OutputType>Exe</OutputType>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <RootNamespace>DeltaForth</RootNamespace>
+    <AssemblyName>DeltaForth</AssemblyName>
+    <StartupObject>DeltaForth.ForthConsole</StartupObject>
+  </PropertyGroup>
+
+  <!-- Nuget specific tags -->
+  <PropertyGroup>
+    <Version>1.5</Version>
+    <PackageId>Delta Forth .NET</PackageId>
+    <Company>Neil McNeight</Company>
+    <Authors>Valer Bocan, Neil McNeight</Authors>
+    <Description>The .NET Forth Compiler.</Description>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryUrl>https://github.com/McNeight/delta-forth-net</RepositoryUrl>
+    <Copyright>Copyright © 1997-2011, 2018 Valer Bocan &amp; Neil McNeight</Copyright>
+    <PackageTags></PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageReleaseNotes></PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+</Project>
