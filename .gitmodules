@@ -1,0 +1,3 @@
+[submodule "src/DeltaForth.Samples/TestSuites/forth2012-test-suite"]
+	path = src/DeltaForth.Samples/TestSuites/forth2012-test-suite
+	url = https://github.com/gerryjackson/forth2012-test-suite.git
